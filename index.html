@@ -312,7 +312,7 @@
 
             contentArea.innerHTML = `
                 <div class="game-card text-center">
-                    <h2 class="text-4xl font-extrabold text-indigo-600 mb-4">🏆 挑战完成！</h2>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold text-indigo-600 mb-4">🏆 挑战完成！</h2>
                     <p class="text-xl text-gray-700 mb-2">小魔法师，你成功完成了 ${state.maxRounds} 回合的长度挑战！</p>
                     
                     <div class="bg-indigo-50 p-6 rounded-xl inline-block mb-8 shadow-lg">
@@ -378,7 +378,7 @@
         function renderHome() {
             contentArea.innerHTML = `
                 <div class="game-card text-center">
-                    <h2 class="text-4xl font-extrabold text-indigo-600 mb-4">欢迎来到长度魔法师的世界！</h2>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold text-indigo-600 mb-4">欢迎来到长度魔法师的世界！</h2>
                     <p class="text-lg text-gray-700 mb-8">小侦探，准备好用你的数学魔法解决长度单位的加减法了吗？</p>
                     
                     <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-6">
@@ -469,7 +469,7 @@
             contentArea.innerHTML = `
                 <div class="game-card">
                     <h2 class="text-3xl font-bold text-center mb-6 ${isCity ? 'text-green-600' : 'text-yellow-600'}">${title}</h2>
-                    <div class="flex justify-between items-center mb-4 text-xl font-semibold text-gray-700">
+                    <div class="flex justify-between items-center mb-4 text-lg sm:text-xl font-semibold text-gray-700">
                         <span>回合: ${state.roundCount} / ${state.maxRounds}</span>
                         <span>当前得分: ${state.score}</span>
                         <button class="text-sm text-indigo-500 hover:text-indigo-700 underline" onclick="renderGame('${type}', true)">换一题</button>
@@ -480,16 +480,16 @@
                         
                         <div class="flex flex-col items-end w-full max-w-80">
                             <!-- 第一行: 被加数/被减数 -->
-                            <div class="text-4xl font-extrabold text-gray-800 flex justify-end w-full">
-                                <span class="text-right w-1/2 pr-2">${p.A} <span class="text-xl font-semibold">${unit1}</span></span>
-                                <span class="text-right w-1/2">${p.B} <span class="text-xl font-semibold">${unit2}</span></span>
+                            <div class="text-2xl sm:text-4xl font-extrabold text-gray-800 flex justify-end w-full">
+                                <span class="text-right w-1/2 pr-2">${p.A} <span class="text-lg sm:text-xl font-semibold">${unit1}</span></span>
+                                <span class="text-right w-1/2">${p.B} <span class="text-lg sm:text-xl font-semibold">${unit2}</span></span>
                             </div>
 
                             <!-- 第二行: 运算符和加数/减数 -->
-                            <div class="text-4xl font-extrabold text-gray-800 flex justify-end w-full mt-2 border-b-2 border-gray-400 pb-2">
+                            <div class="text-2xl sm:text-4xl font-extrabold text-gray-800 flex justify-end w-full mt-2 border-b-2 border-gray-400 pb-2">
                                 <span class="w-1/12 text-left">${p.operation}</span>
-                                <span class="text-right w-1/4 pr-2">${p.C} <span class="text-xl font-semibold">${unit1}</span></span>
-                                <span class="text-right w-1/2">${p.D} <span class="text-xl font-semibold">${unit2}</span></span>
+                                <span class="text-right w-1/4 pr-2">${p.C} <span class="text-lg sm:text-xl font-semibold">${unit1}</span></span>
+                                <span class="text-right w-1/2">${p.D} <span class="text-lg sm:text-xl font-semibold">${unit2}</span></span>
                             </div>
                         </div>
                     </div>
@@ -500,11 +500,11 @@
         <div class="flex w-full justify-end  ">
             <div class="flex items-center w-1/2 pr-2 justify-end space-x-2">
     <input type="number" id="inputU1" class="w-20 text-center text-2xl p-2 border-4 rounded-lg ${isCity ? 'border-green-400' : 'border-yellow-400'}" value="${p.userU1 || ''}">
-    <span class="text-xl font-semibold">${unit1}</span>
+    <span class="text-lg sm:text-xl font-semibold">${unit1}</span>
 </div>
             <div class="flex items-center w-1/2 justify-end space-x-2">
     <input type="number" id="inputU2" class="w-20 text-center text-2xl p-2 border-4 rounded-lg ${isCity ? 'border-green-400' : 'border-yellow-400'}" value="${p.userU2 || ''}">
-    <span class="text-xl font-semibold">${unit2}</span>
+    <span class="text-lg sm:text-xl font-semibold">${unit2}</span>
 </div>
         </div>
     </div>
