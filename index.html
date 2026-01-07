@@ -1,532 +1,546 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>长度魔法师：长度单位加减游戏</title>
-    <!-- 引入 Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* 引入中文字体 */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@400;700&display=swap');
-        body {
-            font-family: 'Noto Sans SC', 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f0f4f8 0%, #e0e7ff 100%);
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 900px;
-        }
-        .btn-primary {
-            transition: all 0.2s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-        }
-        .game-card {
-            background-color: white;
-            border-radius: 1.5rem;
-            padding: 2rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        /* 确保输入框与竖式对齐 */
-        .answer-input-container {
-            width: 256px; /* 固定的宽度，与问题区域一致 w-64 */
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>长度魔法师：长度单位加减游戏</title>
+  <!-- 引入 Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* 引入中文字体 */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@400;700&display=swap');
+
+    body {
+      font-family: 'Noto Sans SC', 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f0f4f8 0%, #e0e7ff 100%);
+      min-height: 100vh;
+    }
+
+    .container { max-width: 900px; }
+
+    .btn-primary {
+      transition: all 0.2s;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .game-card {
+      background-color: white;
+      border-radius: 1.5rem;
+      padding: 2rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    /* 导航按钮统一样式 */
+    .nav-btn {
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+  </style>
 </head>
 <body class="p-4">
+  <!-- 主应用容器 -->
+  <div id="app" class="container mx-auto p-4 md:p-8 rounded-xl">
+    <!-- 头部导航栏 -->
+    <header class="bg-indigo-600 text-white p-4 rounded-xl shadow-lg flex flex-col md:flex-row justify-between items-center mb-6 sticky top-0 z-10">
+      <h1 class="text-3xl font-bold mb-3 md:mb-0">📏 长度魔法师</h1>
+      <nav id="navbar" class="flex flex-wrap justify-center gap-2 md:gap-4">
+        <button class="nav-btn bg-indigo-700 hover:bg-indigo-800" onclick="changeView('home')">主页</button>
+        <button class="nav-btn bg-indigo-700 hover:bg-indigo-800" onclick="changeView('manual')">魔法手册</button>
+        <button class="nav-btn bg-indigo-700 hover:bg-indigo-800" onclick="changeView('city')">城市探险 (km/m)</button>
+        <button class="nav-btn bg-indigo-700 hover:bg-indigo-800" onclick="changeView('micro')">微观世界 (cm/mm)</button>
+      </nav>
+    </header>
 
-    <!-- 主应用容器 -->
-    <div id="app" class="container mx-auto p-4 md:p-8 rounded-xl">
-        
-        <!-- 头部导航栏 -->
-        <header class="bg-indigo-600 text-white p-4 rounded-xl shadow-lg flex flex-col md:flex-row justify-between items-center mb-6 sticky top-0 z-10">
-            <h1 class="text-3xl font-bold mb-3 md:mb-0">📏 长度魔法师</h1>
-            <nav id="navbar" class="flex flex-wrap justify-center gap-2 md:gap-4">
-                <button class="nav-btn bg-indigo-700 hover:bg-indigo-800" onclick="changeView('home')">主页</button>
-                <button class="nav-btn bg-indigo-700 hover:bg-indigo-800" onclick="changeView('manual')">魔法手册</button>
-                <button class="nav-btn bg-indigo-700 hover:bg-indigo-800" onclick="changeView('city')">城市探险 (km/m)</button>
-                <button class="nav-btn bg-indigo-700 hover:bg-indigo-800" onclick="changeView('micro')">微观世界 (cm/mm)</button>
-            </nav>
-        </header>
+    <!-- 内容区域 -->
+    <main id="content-area" class="mt-8"></main>
 
-        <!-- 内容区域 -->
-        <main id="content-area" class="mt-8">
-            <!-- 各个视图将动态插入到这里 -->
-        </main>
-        
-        <!-- 结果反馈区域 -->
-        <div id="feedback" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 hidden items-center justify-center z-50">
-            <div id="feedback-card" class="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-sm transform scale-90 transition-all duration-300">
-                <h2 id="feedback-message" class="text-3xl font-bold mb-4"></h2>
-                <p id="feedback-details" class="text-gray-600 mb-6"></p>
-                <button class="btn-primary bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3" onclick="hideFeedback()">继续挑战</button>
+    <!-- 结果反馈区域 -->
+    <div id="feedback" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 hidden items-center justify-center z-50">
+      <div id="feedback-card" class="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-sm transform scale-90 transition-all duration-300">
+        <h2 id="feedback-message" class="text-3xl font-bold mb-4"></h2>
+        <p id="feedback-details" class="text-gray-600 mb-6"></p>
+        <button class="btn-primary bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3" onclick="hideFeedback()">继续挑战</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ================================
+    // 全局状态管理
+    // ================================
+    const state = {
+      currentView: 'home',
+      currentProblem: null,
+      score: 0,
+      roundCount: 0, // 当前已完成/已尝试的回合数 (1到maxRounds)
+      maxRounds: 10 // 最大回合数
+    };
+
+    // DOM 元素引用
+    const contentArea = document.getElementById('content-area');
+    const feedbackEl = document.getElementById('feedback');
+    const feedbackMessageEl = document.getElementById('feedback-message');
+    const feedbackDetailsEl = document.getElementById('feedback-details');
+
+    window.onload = function () {
+      changeView('home');
+    };
+
+    // ================================
+    // 工具函数：格式化显示与采样
+    // ================================
+
+    /**
+     * 格式化长度显示：当小单位为0时，省略“0小单位”。
+     * 例：1 cm 0 mm -> 1 cm
+     */
+    function formatLength(u1, u2, unit1, unit2) {
+      // 目标：显示时尽量不出现“0 大单位”。
+      // - 若 u1===0 且 u2>0：显示为“u2小单位”（例如 7mm / 450m）
+      // - 若 u2===0：显示为“u1大单位”
+      // - 否则：显示“u1大单位u2小单位”
+      if (u1 === 0 && u2 > 0) return `${u2}${unit2}`;
+      const a = `${u1}${unit1}`;
+      if (u2 === 0) return a;
+      return `${a}${u2}${unit2}`;
+    }
+
+    /** 随机整数 [min, max] */
+    function randInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    /**
+     * 生成非0小单位（避免题目出现“0 m / 0 mm”）
+     * 注意：对减法非挑战模式需要满足 D < B；所以单独处理。
+     */
+    function nonZeroSmallUnit(factor) {
+      return randInt(1, factor - 1);
+    }
+
+    // ================================
+    // 可选：保留手动设置题目
+    // ================================
+    function setSpecificProblem(type, operation, A, B, C, D) {
+      const factor = type === 'city' ? 1000 : 10;
+      const unit1 = type === 'city' ? 'km' : 'cm';
+      const unit2 = type === 'city' ? 'm' : 'mm';
+
+      const total1 = A * factor + B;
+      const total2 = C * factor + D;
+      const totalResult = operation === '+' ? (total1 + total2) : (total1 - total2);
+
+      if (totalResult < 0) {
+        console.error('错误：减法结果为负数，无法设置题目。');
+        changeView('home');
+        return;
+      }
+
+      const resultU1 = Math.floor(totalResult / factor);
+      const resultU2 = totalResult % factor;
+
+      state.currentProblem = { type, unit1, unit2, A, B, C, D, operation, resultU1, resultU2, factor };
+      changeView(type);
+    }
+
+    // ================================
+    // 核心数学和逻辑函数
+    // ================================
+
+    /**
+     * 生成随机长度单位问题
+     * 改动：避免题目出现 B 或 D 为 0 的情况（即“带0”）。
+     */
+    function generateProblem(type, operation) {
+      const factor = type === 'city' ? 1000 : 10;
+      const unit1 = type === 'city' ? 'km' : 'cm';
+      const unit2 = type === 'city' ? 'm' : 'mm';
+
+      let A, B, C, D;
+
+      // 70% 的概率生成需要进位/借位的挑战性题目
+      const isChallenging = Math.random() < 0.7;
+
+      const maxU1_city = 12;
+      const maxU1_micro = 8;
+
+      // 为了彻底避免题目“带0”，在生成后做一次兜底检查，不符合就重试
+      // （也能避免极少数逻辑组合导致 B/D 为0 或其它边界问题）
+      let guard = 0;
+      while (guard < 200) {
+        guard++;
+
+        if (operation === '-') {
+          const maxA = type === 'city' ? maxU1_city : maxU1_micro;
+
+          A = randInt(4, maxA);                // 4..maxA
+          C = randInt(1, Math.max(1, A - 1));  // 1..A-1
+
+          if (isChallenging) {
+            // 需要借位：D 取较大，B 取较小且 < D
+            D = randInt(5, factor - 1);
+            B = randInt(1, Math.min(D - 1, Math.floor(factor / 3)));
+
+            // 确保 total1 > total2
+            while (A * factor + B <= C * factor + D) {
+              A++;
+              if (A > maxA) { A = maxA; break; }
+            }
+          } else {
+            // 非挑战：避免 B 或 D = 0
+            B = nonZeroSmallUnit(factor);          // 1..factor-1
+            D = randInt(1, B);                     // 1..B
+            if (D === B) D = Math.max(1, B - 1);   // 强制 D < B
+
+            // 避免 A==C 且 B==D（虽然 D<B 已排除，但保留保险）
+            if (A === C && B === D) {
+              D = Math.max(1, D - 1);
+            }
+
+            // 仍要确保 total1 > total2
+            if (A * factor + B <= C * factor + D) {
+              A = Math.min(maxA, A + 1);
+            }
+          }
+        } else {
+          // 加法
+          const maxAC = type === 'city' ? 7 : 4;
+          A = randInt(1, maxAC);
+          C = randInt(1, maxAC);
+
+          if (isChallenging) {
+            // 需要进位：B 大、D 小但非0
+            B = randInt(Math.ceil(factor / 2), factor - 1);
+            D = randInt(1, Math.floor(factor / 2));
+          } else {
+            // 非挑战也避免 0
+            B = randInt(1, Math.max(1, Math.floor(factor / 2)));
+            D = randInt(1, Math.max(1, Math.floor(factor / 2)));
+          }
+        }
+
+        // 兜底：确保题目两行小单位都不为0，且“结果”的小单位也不为0
+        // 目标：避免出现类似 2 cm 0 mm / 5 km 0 m 的结果
+        const _t1 = A * factor + B;
+        const _t2 = C * factor + D;
+        const _tr = operation === '+' ? (_t1 + _t2) : (_t1 - _t2);
+        const _resultU1 = Math.floor(_tr / factor);
+        const _resultU2 = _tr % factor;
+
+        // 约束：题目两行小单位不为0；结果不出现“0大单位”或“0小单位”
+        // 即避免：0 cm 7 mm、2 cm 0 mm、0 km 450 m 等
+        if (B !== 0 && D !== 0 && _resultU1 !== 0 && _resultU2 !== 0) break;
+      }
+
+      const total1 = A * factor + B;
+      const total2 = C * factor + D;
+      const totalResult = operation === '+' ? (total1 + total2) : (total1 - total2);
+
+      const resultU1 = Math.floor(totalResult / factor);
+      const resultU2 = totalResult % factor;
+
+      state.currentProblem = { type, unit1, unit2, A, B, C, D, operation, resultU1, resultU2, factor };
+      return state.currentProblem;
+    }
+
+    /**
+     * 检查用户答案
+     * 改动：当正确答案的小单位为0时，允许用户把小单位留空（视为0）。
+     */
+    function checkAnswer(type) {
+      const problem = state.currentProblem;
+      if (!problem || problem.type !== type) return;
+
+      const inputU1Raw = document.getElementById('inputU1').value;
+      const inputU2Raw = document.getElementById('inputU2').value;
+
+      const userU1 = parseInt(inputU1Raw);
+
+      // 小单位允许留空：留空 -> 0
+      const userU2 = inputU2Raw === '' ? 0 : parseInt(inputU2Raw);
+
+      if (isNaN(userU1) || isNaN(userU2)) {
+        showMessage('哎呀！', '请输入有效的数字哦，小魔法师！', 'bg-red-500');
+        return;
+      }
+
+      if (userU2 >= problem.factor) {
+        showMessage('格式错误', `小单位 (${problem.unit2}) 不能大于或等于 ${problem.factor}。请记得进位！`, 'bg-red-500');
+        return;
+      }
+
+      const userTotal = userU1 * problem.factor + userU2;
+      const correctTotal = problem.resultU1 * problem.factor + problem.resultU2;
+      const correctStr = formatLength(problem.resultU1, problem.resultU2, problem.unit1, problem.unit2);
+
+      if (userTotal === correctTotal && userU2 === problem.resultU2) {
+        state.score++;
+        showMessage('🎉 太棒了！', `你算对啦！正确答案是 ${correctStr}。`, 'bg-green-500', true, type);
+      } else if (userTotal === correctTotal && userU2 !== problem.resultU2) {
+        let hint = `总长度是正确的，但你忘记了**进位**或**借位**！`;
+        hint += `<br>请注意：${problem.factor}${problem.unit2} 等于 1${problem.unit1}。正确答案是：${correctStr}。`;
+        showMessage('🤔 差点成功！', hint, 'bg-orange-500', false, type);
+      } else {
+        let hint = `正确答案是：${correctStr}。`;
+        hint += `<br>请注意：${problem.factor}${problem.unit2} 等于 1${problem.unit1}。你需要进行**进位**或**借位**运算哦！`;
+        showMessage('😟 再试试！', hint, 'bg-red-500', false, type);
+      }
+    }
+
+    // ================================
+    // 动画效果/反馈展示
+    // ================================
+    function showMessage(title, detail, colorClass, isCorrect, nextGame) {
+      feedbackMessageEl.textContent = title;
+      feedbackDetailsEl.innerHTML = detail;
+      const card = document.getElementById('feedback-card');
+      card.className = `game-card text-center max-w-sm transform scale-100 transition-all duration-300 ${colorClass} text-white`;
+
+      const button = feedbackEl.querySelector('button');
+      const isGameOver = state.roundCount >= state.maxRounds;
+
+      if (isCorrect) {
+        if (isGameOver) {
+          button.textContent = '查看总成绩';
+          button.onclick = () => { hideFeedback(); renderFinalScore(); };
+          feedbackMessageEl.textContent = '挑战成功！';
+          feedbackDetailsEl.innerHTML = `你已完成所有 ${state.maxRounds} 题挑战，得分已更新。`;
+        } else {
+          button.textContent = '下一题！';
+          button.onclick = () => { hideFeedback(); renderGame(nextGame, true); };
+        }
+      } else {
+        button.textContent = '再试一次';
+        button.onclick = () => { hideFeedback(); };
+      }
+
+      feedbackEl.classList.remove('hidden');
+      feedbackEl.classList.add('flex');
+    }
+
+    function hideFeedback() {
+      feedbackEl.classList.remove('flex');
+      feedbackEl.classList.add('hidden');
+
+      if (state.currentProblem) {
+        const currentType = state.currentProblem.type;
+        const inputU1 = document.getElementById('inputU1');
+        const inputU2 = document.getElementById('inputU2');
+        if (inputU1 && inputU2) {
+          state.currentProblem.userU1 = inputU1.value;
+          state.currentProblem.userU2 = inputU2.value;
+        }
+        renderGame(currentType, false);
+      }
+    }
+
+    // ================================
+    // 游戏流程
+    // ================================
+    function resetGameAndStart(type) {
+      state.score = 0;
+      state.roundCount = 0;
+      state.currentProblem = null;
+      changeView(type);
+    }
+
+    function renderFinalScore() {
+      state.currentProblem = null;
+
+      contentArea.innerHTML = `
+        <div class="game-card text-center">
+          <h2 class="text-xl sm:text-3xl font-extrabold text-indigo-600 mb-4">🏆 挑战完成！</h2>
+          <p class="text-xl text-gray-700 mb-2">小魔法师，你成功完成了 ${state.maxRounds} 回合的长度挑战！</p>
+
+          <div class="bg-indigo-50 p-6 rounded-xl inline-block mb-8 shadow-lg">
+            <p class="text-2xl font-semibold text-indigo-700">你的总得分是：</p>
+            <p class="text-6xl font-extrabold text-indigo-900 mt-0">${state.score} / ${state.maxRounds}</p>
+          </div>
+
+          <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-6">
+            <button class="btn-primary bg-indigo-700 hover:bg-indigo-800 text-white text-xl py-4 px-8" onclick="resetGameAndStart('city')">再玩一次 (城市)</button>
+            <button class="btn-primary bg-indigo-700 hover:bg-indigo-800 text-white text-xl py-4 px-8" onclick="resetGameAndStart('micro')">再玩一次 (微观)</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // ================================
+    // 视图渲染
+    // ================================
+    function changeView(viewName) {
+      state.currentView = viewName;
+      contentArea.innerHTML = '';
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('bg-opacity-50', 'ring-2', 'ring-white');
+      });
+      const currentButton = document.querySelector(`.nav-btn[onclick*="${viewName}"]`);
+      if (currentButton) {
+        currentButton.classList.add('bg-opacity-50', 'ring-2', 'ring-white');
+      }
+
+      const isGameView = viewName === 'city' || viewName === 'micro';
+      const shouldGenerateNew = isGameView && (state.currentProblem === null || state.currentProblem.type !== viewName);
+
+      switch (viewName) {
+        case 'home':
+          state.currentProblem = null;
+          state.score = 0;
+          state.roundCount = 0;
+          renderHome();
+          break;
+        case 'manual':
+          renderManual();
+          break;
+        case 'city':
+          renderGame('city', shouldGenerateNew);
+          break;
+        case 'micro':
+          renderGame('micro', shouldGenerateNew);
+          break;
+      }
+    }
+
+    function renderHome() {
+      contentArea.innerHTML = `
+        <div class="game-card text-center">
+          <h2 class="text-xl sm:text-3xl font-extrabold text-indigo-600 mb-4">欢迎来到长度魔法师的世界！</h2>
+          <p class="text-lg text-gray-700 mb-8">小侦探，准备好用你的数学魔法解决长度单位的加减法了吗？</p>
+
+          <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-6">
+            <button class="btn-primary bg-indigo-700 hover:bg-indigo-800 text-white text-xl py-4 px-8" onclick="changeView('city')">🏙️ 城市探险 (km/m)</button>
+            <button class="btn-primary bg-indigo-700 hover:bg-indigo-800 text-white text-xl py-4 px-8" onclick="changeView('micro')">🔬 微观世界 (cm/mm)</button>
+          </div>
+
+          <div class="mt-8 p-4 bg-indigo-50 rounded-lg border-l-4 border-indigo-400">
+            <p class="text-sm text-gray-600">别忘了先去 <button class="text-indigo-600 font-semibold underline" onclick="changeView('manual')">魔法手册</button> 学习换算规则哦！</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderManual() {
+      contentArea.innerHTML = `
+        <div class="game-card">
+          <h2 class="text-3xl font-bold text-indigo-600 mb-6 border-b pb-2">魔法手册 (单位换算规则) 📚</h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="p-4 bg-indigo-50 rounded-xl shadow-inner">
+              <h3 class="text-2xl font-semibold text-indigo-700 mb-3">城市探险 (公里/米)</h3>
+              <p class="text-lg mb-2">当米数达到 1000 时，就需要 <b>进位</b> 到公里。</p>
+              <p class="text-xl font-bold text-red-600">1 km = 1000 m</p>
+              <p class="text-sm text-gray-500 mt-3">加法进位：500 m + 600 m = 1 km 100 m</p>
+              <p class="text-sm text-gray-500">减法借位：从 1 km 借出 1000 m</p>
             </div>
+
+            <div class="p-4 bg-yellow-50 rounded-xl shadow-inner">
+              <h3 class="text-2xl font-semibold text-yellow-700 mb-3">微观世界 (厘米/毫米)</h3>
+              <p class="text-lg mb-2">当毫米数达到 10 时，就需要 <b>进位</b> 到厘米。</p>
+              <p class="text-xl font-bold text-red-600">1 cm = 10 mm</p>
+              <p class="text-sm text-gray-500 mt-3">加法进位：9 mm + 7 mm = 1 cm 6 mm</p>
+              <p class="text-sm text-gray-500">减法借位：从 1 cm 借出 10 mm</p>
+            </div>
+          </div>
         </div>
+      `;
+    }
 
-    </div>
+    function renderGame(type, newProblem = true) {
+      const isCity = type === 'city';
+      const title = isCity ? '城市探险 (km/m) 🏙️' : '微观世界 (cm/mm) 🔬';
+      const unit1 = isCity ? 'km' : 'cm';
+      const unit2 = isCity ? 'm' : 'mm';
+      const factor = isCity ? 1000 : 10;
 
-    <script>
-        // 全局状态管理
-        const state = {
-            currentView: 'home',
-            currentProblem: null,
-            score: 0,
-            roundCount: 0, // 当前已完成/已尝试的回合数 (1到maxRounds)
-            maxRounds: 10 // 最大回合数
-        };
+      const operation = Math.random() < 0.5 ? '+' : '-';
 
-        // DOM 元素引用
-        const contentArea = document.getElementById('content-area');
-        const feedbackEl = document.getElementById('feedback');
-        const feedbackMessageEl = document.getElementById('feedback-message');
-        const feedbackDetailsEl = document.getElementById('feedback-details');
-
-        // 初始化函数
-        window.onload = function() {
-            // 默认加载到微观世界模式，并生成一个新的随机问题
-            changeView('home');
-        };
-
-        /**
-         * 设置一个特定的问题，并开始游戏 (保留此函数以备用户后续手动设置题目)
-         */
-        function setSpecificProblem(type, operation, A, B, C, D) {
-             const factor = type === 'city' ? 1000 : 10;
-             const unit1 = type === 'city' ? 'km' : 'cm';
-             const unit2 = type === 'city' ? 'm' : 'mm';
-
-             // 计算正确答案
-             const total1 = A * factor + B;
-             const total2 = C * factor + D;
-             let totalResult = operation === '+' ? (total1 + total2) : (total1 - total2);
-            
-             if (totalResult < 0) {
-                 console.error("错误：减法结果为负数，无法设置题目。");
-                 changeView('home');
-                 return;
-             }
-
-             const resultU1 = Math.floor(totalResult / factor);
-             const resultU2 = totalResult % factor;
-
-             state.currentProblem = {
-                 type, unit1, unit2, A, B, C, D, operation, resultU1, resultU2, factor
-             };
-             
-             changeView(type);
+      if (newProblem || state.currentProblem === null || state.currentProblem.type !== type) {
+        if (state.roundCount >= state.maxRounds) {
+          renderFinalScore();
+          return;
         }
 
-        // =========================================================
-        // 核心数学和逻辑函数
-        // =========================================================
+        generateProblem(type, operation);
+        state.currentProblem.userU1 = '';
+        state.currentProblem.userU2 = '';
 
-        /**
-         * 生成随机长度单位问题
-         * @param {string} type - 'city' (km/m) 或 'micro' (cm/mm)
-         * @param {string} operation - '+' 或 '-'
-         * @returns {object} 包含操作数、运算符和正确答案的对象
-         */
-        function generateProblem(type, operation) {
-            const factor = type === 'city' ? 1000 : 10;
-            const unit1 = type === 'city' ? 'km' : 'cm';
-            const unit2 = type === 'city' ? 'm' : 'mm';
+        state.roundCount++;
+      }
 
-            let A, B, C, D;
-            let resultU1, resultU2;
-            
-            // 70% 的概率生成需要进位/借位的挑战性题目
-            const isChallenging = Math.random() < 0.7; 
+      const p = state.currentProblem;
 
-            const maxU1_city = 12; 
-            const maxU1_micro = 8; 
+      if (p.type !== type) {
+        state.roundCount = 1;
+        generateProblem(type, operation);
+        state.currentProblem.userU1 = '';
+        state.currentProblem.userU2 = '';
+      }
 
-            if (operation === '-') {
-                const maxA = type === 'city' ? maxU1_city : maxU1_micro;
-                
-                A = Math.floor(Math.random() * (maxA - 4 + 1)) + 4; 
-                C = Math.floor(Math.random() * (A - 1)) + 1;     
-                
-                if (isChallenging) {
-                    D = Math.floor(Math.random() * (factor - 5)) + 5; 
-                    B = Math.floor(Math.random() * Math.min(D - 1, factor / 3)) + 1; 
+      contentArea.innerHTML = `
+        <div class="game-card">
+          <h2 class="text-3xl font-bold text-center mb-6 ${isCity ? 'text-green-600' : 'text-yellow-600'}">${title}</h2>
 
-                    while (A * factor + B <= C * factor + D) {
-                        A++; 
-                    }
-                } else {
-                    B = Math.floor(Math.random() * factor);
-                    D = Math.floor(Math.random() * B);
+          <div class="flex justify-between items-center mb-4 text-base sm:text-lg font-semibold text-gray-700">
+            <span>回合: ${state.roundCount} / ${state.maxRounds}</span>
+            <span>当前得分: ${state.score}</span>
+            <button class="text-sm text-indigo-500 hover:text-indigo-700 underline" onclick="renderGame('${type}', true)">换一题</button>
+          </div>
 
-                    if (A === C && B === D) {
-                         D = Math.floor(Math.random() * B);
-                         if (D === B) { D = Math.max(0, B - 1); }
-                    }
-                }
+          <!-- 问题展示区 (竖式) -->
+          <div class="flex flex-col items-center p-6 bg-gray-50 rounded-xl mb-8">
+            <div class="flex flex-col items-end w-full max-w-80">
+              <div class="text-xl sm:text-3xl font-extrabold text-gray-800 flex justify-end w-full">
+                <span class="w-1/12"></span>
+                <span class="text-right w-1/3 pr-1">${p.A} <span class="text-base sm:text-lg font-semibold">${unit1}</span></span>
+                <span class="text-right w-1/3">${p.B} <span class="text-base sm:text-lg font-semibold">${unit2}</span></span>
+              </div>
 
-            } else { // 加法 '+'
-                const maxAC = type === 'city' ? 7 : 4; 
+              <div class="text-xl sm:text-3xl font-extrabold text-gray-800 flex justify-end w-full mt-2 border-b-2 border-gray-400 pb-2">
+                <span class="w-1/12 text-left">${p.operation}</span>
+                <span class="text-right w-1/3 pr-1">${p.C} <span class="text-base sm:text-lg font-semibold">${unit1}</span></span>
+                <span class="text-right w-1/3">${p.D} <span class="text-base sm:text-lg font-semibold">${unit2}</span></span>
+              </div>
+            </div>
+          </div>
 
-                A = Math.floor(Math.random() * maxAC) + 1; 
-                C = Math.floor(Math.random() * maxAC) + 1; 
-                
-                if (isChallenging) {
-                    B = Math.floor(Math.random() * (factor / 2)) + Math.ceil(factor / 2) - 1; 
-                    D = Math.floor(Math.random() * (factor / 2)) + 1;
-
-                    B = Math.min(B, factor - 1);
-                    D = Math.min(D, factor - 1);
-
-                } else {
-                    B = Math.floor(Math.random() * (factor / 2));
-                    D = Math.floor(Math.random() * (factor / 2));
-                }
-            }
-            
-            const total1 = A * factor + B;
-            const total2 = C * factor + D;
-            let totalResult = operation === '+' ? (total1 + total2) : (total1 - total2);
-
-            resultU1 = Math.floor(totalResult / factor);
-            resultU2 = totalResult % factor;
-
-            state.currentProblem = {
-                type, unit1, unit2, A, B, C, D, operation, resultU1, resultU2, factor
-            };
-            return state.currentProblem;
-        }
-
-        /**
-         * 检查用户的答案是否正确
-         */
-        function checkAnswer(type) {
-            const problem = state.currentProblem;
-            if (!problem || problem.type !== type) return;
-
-            const inputU1 = document.getElementById('inputU1').value;
-            const inputU2 = document.getElementById('inputU2').value;
-
-            const userU1 = parseInt(inputU1);
-            const userU2 = parseInt(inputU2);
-
-            if (isNaN(userU1) || isNaN(userU2)) {
-                showMessage('哎呀！', '请输入有效的数字哦，小魔法师！', 'bg-red-500');
-                return;
-            }
-
-            if (userU2 >= problem.factor) {
-                 showMessage('格式错误', `小单位 (${problem.unit2}) 不能大于或等于 ${problem.factor}。请记得进位！`, 'bg-red-500');
-                 return;
-            }
-            
-            const userTotal = userU1 * problem.factor + userU2;
-            const correctTotal = problem.resultU1 * problem.factor + problem.resultU2;
-
-
-            if (userTotal === correctTotal && userU2 === problem.resultU2) {
-                state.score++;
-                showMessage('🎉 太棒了！', `你算对啦！正确答案是 ${problem.resultU1}${problem.unit1}${problem.resultU2}${problem.unit2}。`, 'bg-green-500', true, type);
-            } else if (userTotal === correctTotal && userU2 !== problem.resultU2) {
-                let hint = `总长度是正确的，但你忘记了**进位**或**借位**！`;
-                hint += `<br>请注意：${problem.factor}${problem.unit2} 等于 1${problem.unit1}。正确答案是：${problem.resultU1}${problem.unit1}${problem.resultU2}${problem.unit2}。`;
-                 showMessage('🤔 差点成功！', hint, 'bg-orange-500', false, type);
-            }
-             else {
-                let hint = `正确答案是：${problem.resultU1}${problem.unit1}${problem.resultU2}${problem.unit2}。`;
-                hint += `<br>请注意：${problem.factor}${problem.unit2} 等于 1${problem.unit1}。你需要进行**进位**或**借位**运算哦！`;
-                showMessage('😟 再试试！', hint, 'bg-red-500', false, type);
-            }
-        }
-        
-        /**
-         * 动画效果/反馈展示
-         */
-        function showMessage(title, detail, colorClass, isCorrect, nextGame) {
-            feedbackMessageEl.textContent = title;
-            feedbackDetailsEl.innerHTML = detail;
-            const card = document.getElementById('feedback-card');
-            // 设置卡片的颜色和样式
-            card.className = `game-card text-center max-w-sm transform scale-100 transition-all duration-300 ${colorClass} text-white`;
-
-            const button = feedbackEl.querySelector('button');
-            const isGameOver = state.roundCount >= state.maxRounds;
-
-            if (isCorrect) {
-                // 如果答对
-                if (isGameOver) {
-                    // 游戏结束
-                    button.textContent = '查看总成绩';
-                    button.onclick = () => { hideFeedback(); renderFinalScore(); };
-                    feedbackMessageEl.textContent = '挑战成功！';
-                    feedbackDetailsEl.innerHTML = `你已完成所有 ${state.maxRounds} 题挑战，得分已更新。`;
-                } else {
-                    // 继续下一题
-                    button.textContent = '下一题！';
-                    button.onclick = () => { hideFeedback(); renderGame(nextGame, true); };
-                }
-            } else {
-                // 如果答错，允许重试，不进入下一回合
-                button.textContent = '再试一次';
-                button.onclick = () => { hideFeedback(); };
-            }
-
-            feedbackEl.classList.remove('hidden');
-            feedbackEl.classList.add('flex');
-        }
-
-        function hideFeedback() {
-            feedbackEl.classList.remove('flex');
-            feedbackEl.classList.add('hidden');
-            
-            if (state.currentProblem) {
-                 const currentType = state.currentProblem.type;
-                 const inputU1 = document.getElementById('inputU1');
-                 const inputU2 = document.getElementById('inputU2');
-                 if (inputU1 && inputU2) {
-                     // 保存用户的输入，以便在重试时恢复
-                     state.currentProblem.userU1 = inputU1.value;
-                     state.currentProblem.userU2 = inputU2.value;
-                 }
-                 renderGame(currentType, false); // 重新渲染当前问题
-            }
-        }
-
-        /**
-         * 重置游戏状态并开始新游戏
-         */
-        function resetGameAndStart(type) {
-            state.score = 0;
-            state.roundCount = 0;
-            state.currentProblem = null;
-            changeView(type);
-        }
-
-        /**
-         * 渲染最终得分界面
-         */
-        function renderFinalScore() {
-            state.currentProblem = null; // 清除当前问题状态
-
-            contentArea.innerHTML = `
-                <div class="game-card text-center">
-                    <h2 class="text-xl sm:text-3xl font-extrabold text-indigo-600 mb-4">🏆 挑战完成！</h2>
-                    <p class="text-xl text-gray-700 mb-2">小魔法师，你成功完成了 ${state.maxRounds} 回合的长度挑战！</p>
-                    
-                    <div class="bg-indigo-50 p-6 rounded-xl inline-block mb-8 shadow-lg">
-                        <p class="text-2xl font-semibold text-indigo-700">你的总得分是：</p>
-                        <p class="text-6xl font-extrabold text-indigo-900 mt-0">${state.score} / ${state.maxRounds}</p>
-                    </div>
-
-                    <div class="flex flex-col md:flex-row justify中心 space-y-4 md:space-y-0 md:space-x-6">
-                        <button class="btn-primary bg-indigo-700 hover:bg-indigo-800 text-white text-xl py-4 px-8" onclick="resetGameAndStart('city')">
-                            再玩一次 (城市)
-                        </button>
-                        <button class="btn-primary bg-indigo-700 hover:bg-indigo-800 text-white text-xl py-4 px-8" onclick="resetGameAndStart('micro')">
-                            再玩一次 (微观)
-                        </button>
-                    </div>
+          <!-- 答案输入区（对齐竖式） -->
+          <div class="flex flex-col items-center mt-2">
+            <div class="w-full max-w-80 flex justify-end">
+              <div class="flex w-full justify-end">
+                <div class="flex items-center w-1/2 pr-2 justify-end space-x-2">
+                  <input type="number" id="inputU1" class="w-20 text-center text-2xl p-2 border-4 rounded-lg ${isCity ? 'border-green-400' : 'border-yellow-400'}" value="${p.userU1 || ''}">
+                  <span class="text-base sm:text-lg font-semibold">${unit1}</span>
                 </div>
-            `;
-            // 注意: score和roundCount在resetGameAndStart中重置
-        }
-
-
-        // =========================================================
-        // 视图渲染函数
-        // =========================================================
-
-        /**
-         * 改变主视图
-         */
-        function changeView(viewName) {
-            state.currentView = viewName;
-            contentArea.innerHTML = '';
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('bg-opacity-50', 'ring-2', 'ring-white');
-            });
-            const currentButton = document.querySelector(`.nav-btn[onclick*="${viewName}"]`);
-            if (currentButton) {
-                currentButton.classList.add('bg-opacity-50', 'ring-2', 'ring-white');
-            }
-
-            // 检查是否是从主页切换到游戏模式
-            const isGameView = viewName === 'city' || viewName === 'micro';
-            const shouldGenerateNew = isGameView && (state.currentProblem === null || state.currentProblem.type !== viewName);
-            
-            switch (viewName) {
-                case 'home':
-                    state.currentProblem = null;
-                    state.score = 0; // 切换到主页时重置分数
-                    state.roundCount = 0; // 切换到主页时重置回合数
-                    renderHome();
-                    break;
-                case 'manual':
-                    renderManual();
-                    break;
-                case 'city':
-                    renderGame('city', shouldGenerateNew);
-                    break;
-                case 'micro':
-                    renderGame('micro', shouldGenerateNew);
-                    break;
-            }
-        }
-
-        function renderHome() {
-            contentArea.innerHTML = `
-                <div class="game-card text-center">
-                    <h2 class="text-xl sm:text-3xl font-extrabold text-indigo-600 mb-4">欢迎来到长度魔法师的世界！</h2>
-                    <p class="text-lg text-gray-700 mb-8">小侦探，准备好用你的数学魔法解决长度单位的加减法了吗？</p>
-                    
-                    <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-6">
-                        <button class="btn-primary bg-indigo-700 hover:bg-indigo-800 text-white text-xl py-4 px-8" onclick="changeView('city')">
-                            🏙️ 城市探险 (km/m)
-                        </button>
-                        <button class="btn-primary bg-indigo-700 hover:bg-indigo-800 text-white text-xl py-4 px-8" onclick="changeView('micro')">
-                            🔬 微观世界 (cm/mm)
-                        </button>
-                    </div>
-
-                    <div class="mt-8 p-4 bg-indigo-50 rounded-lg border-l-4 border-indigo-400">
-                        <p class="text-sm text-gray-600">别忘了先去 <button class="text-indigo-600 font-semibold underline" onclick="changeView('manual')">魔法手册</button> 学习换算规则哦！</p>
-                    </div>
+                <div class="flex items-center w-1/2 justify-end space-x-2">
+                  <input type="number" id="inputU2" class="w-20 text-center text-2xl p-2 border-4 rounded-lg ${isCity ? 'border-green-400' : 'border-yellow-400'}" value="${p.userU2 || ''}" placeholder="可留空=0">
+                  <span class="text-base sm:text-lg font-semibold">${unit2}</span>
                 </div>
-            `;
-        }
+              </div>
+            </div>
 
-        function renderManual() {
-            contentArea.innerHTML = `
-                <div class="game-card">
-                    <h2 class="text-3xl font-bold text-indigo-600 mb-6 border-b pb-2">魔法手册 (单位换算规则) 📚</h2>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- 大单位换算 -->
-                        <div class="p-4 bg-indigo-50 rounded-xl shadow-inner">
-                            <h3 class="text-2xl font-semibold text-indigo-700 mb-3">城市探险 (公里/米)</h3>
-                            <p class="text-lg mb-2">当米数达到 1000 时，就需要**进位**到公里。</p>
-                            <p class="text-xl font-bold text-red-600">1 km = 1000 m</p>
-                            <p class="text-sm text-gray-500 mt-3">加法进位：500 m + 600 m = 1 km 100 m</p>
-                            <p class="text-sm text-gray-500">减法借位：从 1 km 借出 1000 m</p>
-                            
-                        </div>
+            <p class="text-sm text-red-500 mb-4 mt-2">* 小单位 (${unit2}) 的数字必须小于 ${factor}。（留空视为 0）</p>
 
-                        <!-- 小单位换算 -->
-                        <div class="p-4 bg-yellow-50 rounded-xl shadow-inner">
-                            <h3 class="text-2xl font-semibold text-yellow-700 mb-3">微观世界 (厘米/毫米)</h3>
-                            <p class="text-lg mb-2">当毫米数达到 10 时，就需要**进位**到厘米。</p>
-                            <p class="text-xl font-bold text-red-600">1 cm = 10 mm</p>
-                            <p class="text-sm text-gray-500 mt-3">加法进位：9 mm + 7 mm = 1 cm 6 mm</p>
-                            <p class="text-sm text-gray-500">减法借位：从 1 cm 借出 10 mm</p>
-                            
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        /**
-         * 渲染游戏界面
-         */
-        function renderGame(type, newProblem = true) {
-            const isCity = type === 'city';
-            const title = isCity ? '城市探险 (km/m) 🏙️' : '微观世界 (cm/mm) 🔬';
-            const unit1 = isCity ? 'km' : 'cm';
-            const unit2 = isCity ? 'm' : 'mm';
-            const factor = isCity ? 1000 : 10;
-            
-            const operation = Math.random() < 0.5 ? '+' : '-';
-            
-            if (newProblem || state.currentProblem === null || state.currentProblem.type !== type) {
-                
-                // 检查是否已达到最大回合数
-                if (state.roundCount >= state.maxRounds) {
-                    renderFinalScore();
-                    return;
-                }
-                
-                generateProblem(type, operation);
-                state.currentProblem.userU1 = ''; 
-                state.currentProblem.userU2 = '';
-
-                // 只有生成新问题时才增加回合计数
-                state.roundCount++;
-            } 
-            
-            const p = state.currentProblem;
-            
-            // 确保当前问题的类型与视图匹配
-            if (p.type !== type) {
-                 // 重新生成一个符合当前模式的问题，并重置回合计数
-                 state.roundCount = 1;
-                 generateProblem(type, operation);
-                 state.currentProblem.userU1 = '';
-                 state.currentProblem.userU2 = '';
-            }
-
-            contentArea.innerHTML = `
-                <div class="game-card">
-                    <h2 class="text-3xl font-bold text-center mb-6 ${isCity ? 'text-green-600' : 'text-yellow-600'}">${title}</h2>
-                    <div class="flex justify-between items-center mb-4 text-base sm:text-lg font-semibold text-gray-700">
-                        <span>回合: ${state.roundCount} / ${state.maxRounds}</span>
-                        <span>当前得分: ${state.score}</span>
-                        <button class="text-sm text-indigo-500 hover:text-indigo-700 underline" onclick="renderGame('${type}', true)">换一题</button>
-                    </div>
-
-                    <!-- 问题展示区 (竖式) -->
-                    <div class="flex flex-col items-center p-6 bg-gray-50 rounded-xl  mb-8">
-                        
-                        <div class="flex flex-col items-end w-full max-w-80">
-                            <!-- 第一行: 被加数/被减数 -->
-                            <div class="text-xl sm:text-3xl font-extrabold text-gray-800 flex justify-end w-full">
-                                <span class="w-1/12"></span>
-                                <span class="text-right w-1/3 pr-1">${p.A} <span class="text-base sm:text-lg font-semibold">${unit1}</span></span>
-                                <span class="text-right w-1/3">${p.B} <span class="text-base sm:text-lg font-semibold">${unit2}</span></span>
-                            </div>
-
-                            <!-- 第二行: 运算符和加数/减数 -->
-                            <div class="text-xl sm:text-3xl font-extrabold text-gray-800 flex justify-end w-full mt-2 border-b-2 border-gray-400 pb-2">
-                                <span class="w-1/12 text-left">${p.operation}</span>
-                                <span class="text-right w-1/3 pr-1">${p.C} <span class="text-base sm:text-lg font-semibold">${unit1}</span></span>
-                                <span class="text-right w-1/3">${p.D} <span class="text-base sm:text-lg font-semibold">${unit2}</span></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 答案输入区（对齐竖式） -->
-<div class="flex flex-col items-center mt-2">
-    <div class="w-full max-w-80 flex justify-end">
-        <div class="flex w-full justify-end  ">
-            <div class="flex items-center w-1/2 pr-2 justify-end space-x-2">
-    <input type="number" id="inputU1" class="w-20 text-center text-2xl p-2 border-4 rounded-lg ${isCity ? 'border-green-400' : 'border-yellow-400'}" value="${p.userU1 || ''}">
-    <span class="text-base sm:text-lg font-semibold">${unit1}</span>
-</div>
-            <div class="flex items-center w-1/2 justify-end space-x-2">
-    <input type="number" id="inputU2" class="w-20 text-center text-2xl p-2 border-4 rounded-lg ${isCity ? 'border-green-400' : 'border-yellow-400'}" value="${p.userU2 || ''}">
-    <span class="text-base sm:text-lg font-semibold">${unit2}</span>
-</div>
+            <button class="btn-primary w-full max-w-xs text-xl py-3 text-white font-bold rounded-xl ${isCity ? 'bg-green-600 hover:bg-green-700' : 'bg-yellow-600 hover:bg-yellow-700'}" onclick="checkAnswer('${type}')">提交答案</button>
+          </div>
         </div>
-    </div>
+      `;
 
-    <p class="text-sm text-red-500 mb-4 mt-2">* 小单位 (${unit2}) 的数字必须小于 ${factor}。</p>
-
-    <button class="btn-primary w-full max-w-xs text-xl py-3 text-white font-bold rounded-xl ${isCity ? 'bg-green-600 hover:bg-green-700' : 'bg-yellow-600 hover:bg-yellow-700'}" onclick="checkAnswer('${type}')">
-        提交答案
-    </button>
-</div>
-            `;
-
-            if (!newProblem && p.userU1 !== undefined) {
-                document.getElementById('inputU1').value = p.userU1;
-                document.getElementById('inputU2').value = p.userU2;
-            } else {
-                 state.currentProblem.userU1 = '';
-                 state.currentProblem.userU2 = '';
-            }
-        }
-    </script>
+      if (!newProblem && p.userU1 !== undefined) {
+        document.getElementById('inputU1').value = p.userU1;
+        document.getElementById('inputU2').value = p.userU2;
+      } else {
+        state.currentProblem.userU1 = '';
+        state.currentProblem.userU2 = '';
+      }
+    }
+  </script>
 </body>
 </html>
-
